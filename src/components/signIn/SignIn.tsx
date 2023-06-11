@@ -3,8 +3,11 @@ import * as S from "./SignIn.styles";
 import { useNavigate } from "react-router-dom";
 import { validateEmail, validatePassword } from "../../common/libs/validation";
 import { signIn } from "../../api/signApi";
+import { usePublicAuth } from "../../auth/useAuth";
 
 export default function SignIn() {
+  usePublicAuth();
+
   const navigate = useNavigate();
   const [signInInput, setSignInInput] = useState({ email: "", password: "" });
   const [isValidated, setIsValidated] = useState({ email: false, password: false, signin: true });
@@ -52,7 +55,7 @@ export default function SignIn() {
           alert("비밀번호가 틀립니다 확인해주세요.");
           return;
         }
-        alert(e);
+        console.log(e);
       });
   };
 

@@ -29,11 +29,11 @@ export default function Todos() {
       })
       .catch((e) => {
         if (e === "Unauthorized") {
-          alert("로그인을 하셔야됩니다.");
           navigate("/signin");
           return;
         }
-        alert(e);
+
+        console.log(e);
       });
   }, []);
 
@@ -90,14 +90,7 @@ export default function Todos() {
         setTodoListData(updateTodoListData);
         alert("삭제되었습니다!");
       })
-      .catch((e) => {
-        if (e === "Unauthorized") {
-          alert("로그인을 하셔야됩니다.");
-          navigate("/signin");
-          return;
-        }
-        alert(e);
-      });
+      .catch((e) => console.log(e));
   };
   return (
     <S.Wrapper>

@@ -7,7 +7,17 @@ export const useAuth = () => {
     const accessToken = localStorage.getItem("accessToken");
     if (!accessToken) {
       alert("로그인이 필요합니다.");
-      navigate("/");
+      navigate("/signin");
+    }
+  }, [navigate]);
+};
+
+export const usePublicAuth = () => {
+  const navigate = useNavigate();
+  useEffect(() => {
+    const accessToken = localStorage.getItem("accessToken");
+    if (accessToken) {
+      navigate("/todos");
     }
   }, [navigate]);
 };

@@ -3,8 +3,11 @@ import * as S from "./SignUp.styles";
 import { ChangeEvent, useEffect, useState } from "react";
 import { validateEmail, validatePassword } from "../../common/libs/validation";
 import { signUp } from "../../api/signApi";
+import { usePublicAuth } from "../../auth/useAuth";
 
 export default function SignUp() {
+  usePublicAuth();
+
   const navigate = useNavigate();
 
   const [signUpInput, setSignUpInput] = useState({ email: "", password: "" });
@@ -47,7 +50,7 @@ export default function SignUp() {
           navigate("/signin");
         }
       })
-      .catch((e) => alert(e));
+      .catch((e) => console.log(e));
   };
 
   return (
