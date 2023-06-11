@@ -55,7 +55,7 @@ export default function SignIn() {
           alert("비밀번호가 틀립니다 확인해주세요.");
           return;
         }
-        console.log(e);
+        alert(e);
       });
   };
 

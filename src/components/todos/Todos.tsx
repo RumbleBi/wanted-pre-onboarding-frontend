@@ -32,10 +32,9 @@ export default function Todos() {
           navigate("/signin");
           return;
         }
-
         console.log(e);
       });
-  }, []);
+  }, [navigate]);
 
   // todoList logout
   const handleSignOut = () => {

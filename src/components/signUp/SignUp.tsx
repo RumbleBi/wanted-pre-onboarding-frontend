@@ -50,7 +50,9 @@ export default function SignUp() {
           navigate("/signin");
         }
       })
-      .catch((e) => console.log(e));
+      .catch((e) => {
+        alert(e);
+      });
   };
 
   return (
