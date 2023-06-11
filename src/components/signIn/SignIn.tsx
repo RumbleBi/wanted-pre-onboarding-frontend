@@ -9,6 +9,7 @@ export default function SignIn() {
   const [signInInput, setSignInInput] = useState({ email: "", password: "" });
   const [isValidated, setIsValidated] = useState({ email: false, password: false, signin: true });
 
+  // 이메일, 패스워드 검증로직
   useEffect(() => {
     const { email, password } = signInInput;
     if (validateEmail(email)) {
@@ -29,16 +30,17 @@ export default function SignIn() {
     }));
   }, [signInInput]);
 
+  // 로그인 Input
   const handleSignInInput = (e: ChangeEvent<HTMLInputElement>) => {
     setSignInInput({ ...signInInput, [e.target.name]: e.target.value });
   };
 
+  // 로그인 제출
   const submitSignIn = () => {
     const { email, password } = signInInput;
 
-    signIn(email, password)
+    signIn({ email, password })
       .then((res) => {
-        console.log(res);
         if (res?.status === 200) {
           localStorage.setItem("accessToken", res.data.access_token);
           alert("로그인 성공!");

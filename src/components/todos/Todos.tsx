@@ -11,7 +11,7 @@ export default function Todos() {
   const navigate = useNavigate();
 
   const [todoListData, setTodoListData] = useState<ITodoListData[]>([]);
-  const [accessToken, setAccessToken] = useState<string | null>("");
+  const [accessToken, setAccessToken] = useState("");
   const [todoInput, setTodoInput] = useState("");
   const [isChecked, setIsChecked] = useState(false);
   const [updateTodoInput, setUpdateTodoInput] = useState("");
@@ -20,10 +20,10 @@ export default function Todos() {
 
   // todoList get
   useEffect(() => {
-    const accessToken = localStorage.getItem("accessToken");
+    const accessToken = localStorage.getItem("accessToken") || "";
     setAccessToken(accessToken);
 
-    getTodoList(accessToken)
+    getTodoList({ accessToken })
       .then((res) => {
         setTodoListData([...res]);
       })
@@ -50,8 +50,7 @@ export default function Todos() {
       alert("최소 한 글자는 입력해야 합니다.");
       return;
     }
-
-    createTodo(accessToken, todoInput)
+    createTodo({ accessToken, todoInput })
       .then((res) => {
         setTodoListData([...todoListData, res]);
         setTodoInput("");
@@ -68,9 +67,9 @@ export default function Todos() {
     }
     const id = Number(e.currentTarget.id);
 
-    updateTodo(accessToken, id, updateTodoInput, isChecked)
+    updateTodo({ accessToken, id, updateTodoInput, isCompleted: isChecked })
       .then(() => {
-        getTodoList(accessToken)
+        getTodoList({ accessToken })
           .then((res) => {
             setTodoListData(res);
             setIsEdit(null);
@@ -85,7 +84,7 @@ export default function Todos() {
   const handleDeleteTodo = (e: MouseEvent<HTMLButtonElement>) => {
     const id = Number(e.currentTarget.id);
 
-    deleteTodo(accessToken, id)
+    deleteTodo({ accessToken, id })
       .then(() => {
         const updateTodoListData = todoListData.filter((el) => el.id !== id);
         setTodoListData(updateTodoListData);
@@ -142,7 +141,7 @@ export default function Todos() {
               </>
             ) : (
               <>
-                <button type='button' onClick={() => setIsEdit(el.id)}>
+                <button type='button' data-testid='modify-button' onClick={() => setIsEdit(el.id)}>
                   수정
                 </button>
                 <button

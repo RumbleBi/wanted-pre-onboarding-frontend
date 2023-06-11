@@ -10,6 +10,7 @@ export default function SignUp() {
   const [signUpInput, setSignUpInput] = useState({ email: "", password: "" });
   const [isValidated, setIsValidated] = useState({ email: false, password: false, signup: true });
 
+  // 이메일, 패스워드 검증로직
   useEffect(() => {
     const { email, password } = signUpInput;
     if (validateEmail(email)) {
@@ -30,13 +31,16 @@ export default function SignUp() {
     }));
   }, [signUpInput]);
 
+  // 회원가입 Input
   const handleSignUpInput = (e: ChangeEvent<HTMLInputElement>) => {
     setSignUpInput({ ...signUpInput, [e.target.name]: e.target.value });
   };
+
+  // 회원가입 제출
   const submitSignUp = () => {
     const { email, password } = signUpInput;
 
-    signUp(email, password)
+    signUp({ email, password })
       .then((res) => {
         if (res?.status === 201) {
           alert("회원가입이 되었습니다!");

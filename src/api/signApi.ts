@@ -1,11 +1,12 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { api } from "./config";
+import { ISignApi, ISignRes } from "../types/types";
 
-export const signUp = async (email: string, password: string) => {
+export const signUp = async (data: ISignApi): Promise<AxiosResponse<ISignRes>> => {
   try {
     const response = await api.post("auth/signup", {
-      email,
-      password,
+      email: data.email,
+      password: data.password,
     });
     return response;
   } catch (e) {
@@ -14,14 +15,15 @@ export const signUp = async (email: string, password: string) => {
       throw response?.data.message;
     }
     console.log(e);
+    throw e;
   }
 };
 
-export const signIn = async (email: string, password: string) => {
+export const signIn = async (data: ISignApi): Promise<AxiosResponse<ISignRes>> => {
   try {
     const response = await api.post("auth/signin", {
-      email,
-      password,
+      email: data.email,
+      password: data.password,
     });
     return response;
   } catch (e) {
@@ -30,5 +32,6 @@ export const signIn = async (email: string, password: string) => {
       throw response?.data.message;
     }
     console.log(e);
+    throw e;
   }
 };

@@ -1,10 +1,11 @@
 import axios from "axios";
 import { api } from "./config";
+import { ICreateTodo, IDeleteTodo, ITodoListData, ITodosApi, IUpdateTodo } from "../types/types";
 
-export const getTodoList = async (accessToken: string | null) => {
+export const getTodoList = async (data: ITodosApi): Promise<ITodoListData[]> => {
   try {
     const response = await api.get("todos", {
-      headers: { Authorization: `Bearer ${accessToken}` },
+      headers: { Authorization: `Bearer ${data.accessToken}` },
     });
 
     return response.data;
@@ -14,32 +15,32 @@ export const getTodoList = async (accessToken: string | null) => {
       throw response?.data.message;
     }
     console.log(e);
+    throw e;
   }
 };
 
-export const deleteTodo = async (accessToken: string | null, id: number) => {
+export const deleteTodo = async (data: IDeleteTodo): Promise<void> => {
   try {
-    const response = await api.delete(`todos/${id}`, {
-      headers: { Authorization: `Bearer ${accessToken}` },
+    await api.delete(`todos/${data.id}`, {
+      headers: { Authorization: `Bearer ${data.accessToken}` },
     });
-    console.log(response);
-    return response;
   } catch (e) {
     if (axios.isAxiosError(e)) {
       const { response } = e;
       throw response?.data.message;
     }
     console.log(e);
+    throw e;
   }
 };
 
-export const createTodo = async (accessToken: string | null, todoInput: string) => {
+export const createTodo = async (data: ICreateTodo): Promise<ITodoListData> => {
   try {
     const response = await api.post(
       "todos",
-      { todo: todoInput },
+      { todo: data.todoInput },
       {
-        headers: { Authorization: `Bearer ${accessToken}` },
+        headers: { Authorization: `Bearer ${data.accessToken}` },
       }
     );
 
@@ -50,22 +51,18 @@ export const createTodo = async (accessToken: string | null, todoInput: string) 
       throw response?.data.message;
     }
     console.log(e);
+    throw e;
   }
 };
 
-export const updateTodo = async (
-  accessToken: string | null,
-  id: number,
-  updateTodoInput: string,
-  isCompleted: boolean
-) => {
+export const updateTodo = async (data: IUpdateTodo): Promise<ITodoListData> => {
   try {
     const response = await api.put(
-      `todos/${id}`,
-      { todo: updateTodoInput, isCompleted },
-      { headers: { Authorization: `Bearer ${accessToken}` } }
+      `todos/${data.id}`,
+      { todo: data.updateTodoInput, isCompleted: data.isCompleted },
+      { headers: { Authorization: `Bearer ${data.accessToken}` } }
     );
-    console.log(response.data);
+
     return response.data;
   } catch (e) {
     if (axios.isAxiosError(e)) {
@@ -73,5 +70,6 @@ export const updateTodo = async (
       throw response?.data.message;
     }
     console.log(e);
+    throw e;
   }
 };
