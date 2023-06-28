@@ -11,9 +11,11 @@ export const Wrapper = styled.div`
   border-radius: 20px;
   padding: 30px;
 `;
+
 export const Title = styled.h2`
   margin-bottom: 50px;
 `;
+
 export const InputWrapper = styled.div`
   display: flex;
   align-items: flex-start;
@@ -26,10 +28,12 @@ export const InputWrapper = styled.div`
     margin-top: 5px;
   }
 `;
+
 export const ValidatedError = styled.div`
   color: red;
   font-size: 12px;
 `;
+
 export const BtnWrapper = styled.div`
   position: absolute;
   bottom: 30px;
