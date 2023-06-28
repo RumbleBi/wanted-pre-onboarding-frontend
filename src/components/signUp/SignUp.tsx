@@ -1,58 +1,37 @@
 import { useNavigate } from "react-router-dom";
 import * as S from "./SignUp.styles";
-import { ChangeEvent, useEffect, useState } from "react";
-import { validateEmail, validatePassword } from "../../common/libs/validation";
-import { signUp } from "../../api/signApi";
+import { ChangeEvent, useState } from "react";
 import { usePublicAuth } from "../../auth/useAuth";
+import { useSignInValidation } from "../hooks/useSignValidation";
+import { useSign } from "../hooks/useSign";
 
 export default function SignUp() {
   usePublicAuth();
 
   const navigate = useNavigate();
+  const [signInput, setSignUpInput] = useState({ email: "", password: "" });
 
-  const [signUpInput, setSignUpInput] = useState({ email: "", password: "" });
-  const [isValidated, setIsValidated] = useState({ email: false, password: false, signup: true });
+  const signSection = "signUp";
+  const isValidated = useSignInValidation(signInput);
 
-  // 이메일, 패스워드 검증로직
-  useEffect(() => {
-    const { email, password } = signUpInput;
-    if (validateEmail(email)) {
-      setIsValidated((prevState) => ({ ...prevState, email: true }));
-    } else {
-      setIsValidated((prevState) => ({ ...prevState, email: false }));
-    }
-
-    if (validatePassword(password)) {
-      setIsValidated((prevState) => ({ ...prevState, password: true }));
-    } else {
-      setIsValidated((prevState) => ({ ...prevState, password: false }));
-    }
-
-    setIsValidated((prevState) => ({
-      ...prevState,
-      signup: !(prevState.email && prevState.password),
-    }));
-  }, [signUpInput]);
+  const { isSubmitting, submitSign } = useSign();
 
   // 회원가입 Input
   const handleSignUpInput = (e: ChangeEvent<HTMLInputElement>) => {
-    setSignUpInput({ ...signUpInput, [e.target.name]: e.target.value });
+    setSignUpInput({ ...signInput, [e.target.name]: e.target.value });
   };
 
   // 회원가입 제출
-  const submitSignUp = () => {
-    const { email, password } = signUpInput;
-
-    signUp({ email, password })
-      .then((res) => {
-        if (res?.status === 201) {
-          alert("회원가입이 되었습니다!");
-          navigate("/signin");
-        }
-      })
-      .catch((e) => {
-        alert(e);
-      });
+  const handleSignUpSubmit = async () => {
+    try {
+      const res = await submitSign({ signInput, signSection });
+      if (res?.status === 201) {
+        alert("회원가입이 되었습니다!");
+        navigate("/signin");
+      }
+    } catch (e) {
+      alert(e);
+    }
   };
 
   return (
@@ -87,8 +66,8 @@ export default function SignUp() {
       <S.BtnWrapper>
         <S.SignUpBtn
           data-testid='signup-button'
-          disabled={isValidated.signup}
-          onClick={submitSignUp}
+          disabled={isValidated.isValid || isSubmitting}
+          onClick={handleSignUpSubmit}
         >
           가입하기
         </S.SignUpBtn>
