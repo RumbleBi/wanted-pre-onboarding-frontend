@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
+
 import * as S from "./SignUp.styles";
-import { ChangeEvent, useState } from "react";
+
 import { usePublicAuth } from "../../auth/useAuth";
 import { useSignInValidation } from "../hooks/useSignValidation";
 import { useSign } from "../hooks/useSign";
@@ -9,30 +10,9 @@ export default function SignUp() {
   usePublicAuth();
 
   const navigate = useNavigate();
-  const [signInput, setSignUpInput] = useState({ email: "", password: "" });
 
-  const signSection = "signUp";
+  const { isSubmitting, signInput, handleSignInput, handleSignSubmit } = useSign();
   const isValidated = useSignInValidation(signInput);
-
-  const { isSubmitting, submitSign } = useSign();
-
-  // 회원가입 Input
-  const handleSignUpInput = (e: ChangeEvent<HTMLInputElement>) => {
-    setSignUpInput({ ...signInput, [e.target.name]: e.target.value });
-  };
-
-  // 회원가입 제출
-  const handleSignUpSubmit = async () => {
-    try {
-      const res = await submitSign({ signInput, signSection });
-      if (res?.status === 201) {
-        alert("회원가입이 되었습니다!");
-        navigate("/signin");
-      }
-    } catch (e) {
-      alert(e);
-    }
-  };
 
   return (
     <S.Wrapper>
@@ -47,7 +27,7 @@ export default function SignUp() {
           name='email'
           data-testid='email-input'
           placeholder='@를 포함한 이메일 아이디가 필요합니다.'
-          onChange={handleSignUpInput}
+          onChange={handleSignInput}
         />
       </S.InputWrapper>
       <S.InputWrapper>
@@ -60,14 +40,14 @@ export default function SignUp() {
           name='password'
           data-testid='password-input'
           placeholder='비밀번호는 8자 이상이어야 합니다.'
-          onChange={handleSignUpInput}
+          onChange={handleSignInput}
         />
       </S.InputWrapper>
       <S.BtnWrapper>
         <S.SignUpBtn
           data-testid='signup-button'
           disabled={isValidated.isValid || isSubmitting}
-          onClick={handleSignUpSubmit}
+          onClick={() => handleSignSubmit("signUp")}
         >
           가입하기
         </S.SignUpBtn>

@@ -1,15 +1,32 @@
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import { signIn, signUp } from "../../api/signApi";
 
-interface ISignUpInputProps {
+interface ISignSubmitProps {
   signInput: { email: string; password: string };
   signSection: "signUp" | "signIn";
 }
 
-export function useSign() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+interface ISignInputProps {
+  email: string;
+  password: string;
+}
 
-  const submitSign = async ({ signInput, signSection }: ISignUpInputProps) => {
+export function useSign() {
+  const navigate = useNavigate();
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [signInput, setSignInput] = useState<ISignInputProps>({
+    email: "",
+    password: "",
+  });
+
+  const handleSignInput = (e: ChangeEvent<HTMLInputElement>) => {
+    setSignInput({ ...signInput, [e.target.name]: e.target.value });
+  };
+
+  const submitSign = async ({ signInput, signSection }: ISignSubmitProps) => {
     try {
       setIsSubmitting(true);
 
@@ -29,5 +46,33 @@ export function useSign() {
     }
   };
 
-  return { isSubmitting, submitSign };
+  const handleSignSubmit = async (signSection: "signUp" | "signIn") => {
+    try {
+      const res = await submitSign({ signInput, signSection });
+
+      if (res?.status === 200 && signSection === "signIn") {
+        localStorage.setItem("accessToken", res.data.access_token);
+        alert("로그인 성공!");
+        navigate("/todos");
+      }
+
+      if (res?.status === 201 && signSection === "signUp") {
+        alert("회원가입이 되었습니다!");
+        navigate("/signin");
+      }
+    } catch (e) {
+      if (e === 404) {
+        alert("없는 계정입니다 확인해주세요.");
+        return;
+      }
+      if (e === 401) {
+        alert("비밀번호가 틀립니다 확인해주세요.");
+        return;
+      }
+
+      alert(e);
+    }
+  };
+
+  return { isSubmitting, signInput, submitSign, handleSignInput, handleSignSubmit };
 }
