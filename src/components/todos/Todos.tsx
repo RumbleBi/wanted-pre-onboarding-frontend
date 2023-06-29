@@ -1,96 +1,31 @@
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../auth/useAuth";
+
 import * as S from "./Todos.styles";
-import { MouseEvent, useEffect, useState } from "react";
-import { createTodo, deleteTodo, getTodoList, updateTodo } from "../../api/todosApi";
-import { ITodoListData } from "../../types/types";
+
+import { useAuth } from "../../auth/useAuth";
+import { useTodoList } from "../hooks/useTodolist";
+import { useLogout } from "../hooks/useLogout";
 
 export default function Todos() {
   useAuth();
 
   const navigate = useNavigate();
+  const accessToken = localStorage.getItem("accessToken") || "";
 
-  const [todoListData, setTodoListData] = useState<ITodoListData[]>([]);
-  const [accessToken, setAccessToken] = useState("");
-  const [todoInput, setTodoInput] = useState("");
-  const [isChecked, setIsChecked] = useState(false);
-  const [updateTodoInput, setUpdateTodoInput] = useState("");
+  const handleSignOut = useLogout(navigate);
+  const {
+    todoListData,
+    isEdit,
+    todoInput,
+    setTodoInput,
+    setIsChecked,
+    setUpdateTodoInput,
+    setIsEdit,
+    handleCreateTodo,
+    handleUpdateTodo,
+    handleDeleteTodo,
+  } = useTodoList(accessToken, navigate);
 
-  const [isEdit, setIsEdit] = useState<number | null>(null);
-
-  // todoList get
-  useEffect(() => {
-    const accessToken = localStorage.getItem("accessToken") || "";
-    setAccessToken(accessToken);
-
-    getTodoList({ accessToken })
-      .then((res) => {
-        setTodoListData([...res]);
-      })
-      .catch((e) => {
-        if (e === "Unauthorized") {
-          navigate("/signin");
-          return;
-        }
-        console.log(e);
-      });
-  }, [navigate]);
-
-  // todoList logout
-  const handleSignOut = () => {
-    localStorage.removeItem("accessToken");
-    alert("로그아웃 되었습니다!");
-    navigate("/signin");
-  };
-
-  // todoList create
-  const handleCreateTodo = () => {
-    if (!todoInput) {
-      alert("최소 한 글자는 입력해야 합니다.");
-      return;
-    }
-    createTodo({ accessToken, todoInput })
-      .then((res) => {
-        setTodoListData([...todoListData, res]);
-        setTodoInput("");
-        alert("작성되었습니다!");
-      })
-      .catch((e) => console.log(e));
-  };
-
-  // todoList update
-  const handleUpdateTodo = (e: MouseEvent<HTMLButtonElement>) => {
-    if (!updateTodoInput) {
-      alert("수정된 사항이 있어야 합니다.");
-      return;
-    }
-    const id = Number(e.currentTarget.id);
-
-    updateTodo({ accessToken, id, updateTodoInput, isCompleted: isChecked })
-      .then(() => {
-        getTodoList({ accessToken })
-          .then((res) => {
-            setTodoListData(res);
-            setIsEdit(null);
-            alert("수정되었습니다!");
-          })
-          .catch((e) => console.log(e));
-      })
-      .catch((e) => console.log(e));
-  };
-
-  // todoList delete
-  const handleDeleteTodo = (e: MouseEvent<HTMLButtonElement>) => {
-    const id = Number(e.currentTarget.id);
-
-    deleteTodo({ accessToken, id })
-      .then(() => {
-        const updateTodoListData = todoListData.filter((el) => el.id !== id);
-        setTodoListData(updateTodoListData);
-        alert("삭제되었습니다!");
-      })
-      .catch((e) => console.log(e));
-  };
   return (
     <S.Wrapper>
       <S.HeaderWrapper>
@@ -122,8 +57,7 @@ export default function Todos() {
                 <button
                   type='button'
                   data-testid='submit-button'
-                  onClick={handleUpdateTodo}
-                  id={String(el.id)}
+                  onClick={() => handleUpdateTodo(el.id)}
                 >
                   제출
                 </button>
@@ -139,8 +73,7 @@ export default function Todos() {
                 <button
                   type='button'
                   data-testid='delete-button'
-                  onClick={handleDeleteTodo}
-                  id={String(el.id)}
+                  onClick={() => handleDeleteTodo(el.id)}
                 >
                   삭제
                 </button>
