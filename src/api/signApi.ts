@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from "axios";
+import axios, { type AxiosResponse } from "axios";
 import { api } from "./config";
 import { ISignApi, ISignRes } from "../types/types";
 
@@ -11,10 +11,8 @@ export const signUp = async (data: ISignApi): Promise<AxiosResponse<ISignRes>> =
     return response;
   } catch (e) {
     if (axios.isAxiosError(e)) {
-      const { response } = e;
-      throw response?.data.message;
+      throw e;
     }
-    console.log(e);
     throw e;
   }
 };
@@ -29,9 +27,8 @@ export const signIn = async (data: ISignApi): Promise<AxiosResponse<ISignRes>> =
   } catch (e) {
     if (axios.isAxiosError(e)) {
       const { response } = e;
-      throw response?.data.message;
+      throw response?.data?.statusCode;
     }
-    console.log(e);
     throw e;
   }
 };
